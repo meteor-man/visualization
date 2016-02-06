@@ -2,7 +2,7 @@
 title: "Data Visualization Week1"
 author: "Shahab Alami"
 date: "February 6, 2016"
-output: html_document
+output: pdf_document
 ---
 
 In this document I would like to discuss my expectations for this class. By the end of this paper you will also get to learn some interesting points about me.
@@ -20,9 +20,12 @@ I am a technology professional experienced in creating data-intensive software p
 I tend to focus a lot only on concepts that interest **me** and spend an excessive amount of time on analyzing things that might not deserve that much attention.
 
 ### Interesting Tools And Visualizations
-I am a big fan of [Google Analytics](http://www.google.com/analytics/).
+1. I am a big fan of [Google Analytics](http://www.google.com/analytics/).
 It helps website admins, owners, get a good understanding of the traffic on their websites.
-Its simple design and sophisticated mixture of visualizations and data tables makes it a perfect choice.
+Its simple design and sophisticated mixture of visualizations and data tables makes it a perfect choice.  
 
 ![](http://floranext.terraforma.netdna-cdn.com/wp-content/uploads/2014/03/google-analytics.jpg)
 
+2. [Seaborn](http://stanford.edu/~mwaskom/software/seaborn/) is an interesting tool for statistical data visualization in Python. It is built on top of Python's famous matplotlib and offers a vriety of choices to simplify visuaization in a data-centric python script. I specially enjoy several built-in *themes* that come pre-packaged in this library. Being able to quickly style results saves us a lot of time so that we can better focus on the logic behind our visualizations.  
+
+![](http://stanford.edu/~mwaskom/software/seaborn/_images/regression_41_0.png)
