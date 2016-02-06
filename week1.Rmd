@@ -1,0 +1,28 @@
+---
+title: "Data Visualization Week1"
+author: "Shahab Alami"
+date: "February 6, 2016"
+output: html_document
+---
+
+In this document I would like to discuss my expectations for this class. By the end of this paper you will also get to learn some interesting points about me.
+
+### Expectations
+When I graduate from this class I expect myself to become:  
+1. Well-versed in **telling a compelling** story via proper application of visualizations  
+2. Able to **simplify/improve** noisy visualizations  
+3. Handson-on with the **best practices**    
+
+### Strength
+I am a technology professional experienced in creating data-intensive software products. This enables me to quickly understand the requirements, notice bottlenecks and architect an **efficient data pipeline** to foster the data/information flow in a firm.
+
+### Weakness
+I tend to focus a lot only on concepts that interest **me** and spend an excessive amount of time on analyzing things that might not deserve that much attention.
+
+### Interesting Tools And Visualizations
+I am a big fan of [Google Analytics](http://www.google.com/analytics/).
+It helps website admins, owners, get a good understanding of the traffic on their websites.
+Its simple design and sophisticated mixture of visualizations and data tables makes it a perfect choice.
+
+![](http://floranext.terraforma.netdna-cdn.com/wp-content/uploads/2014/03/google-analytics.jpg)
+
