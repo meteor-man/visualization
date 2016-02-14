@@ -1,0 +1,115 @@
+---
+title: "Data Visualization Week2"
+author: "Shahab Alami"
+date: "February 12, 2016"
+output: pdf_document
+---
+
+In this document we are going to analyze 5 companies stock prices over a 5-year period. 
+
+### What Companies?
+Apple (AAPL), Bank of America (BAC), General Electric (GE), Exxon (XOM) and WalMart (WMT).  
+ 
+### Code Organization
+In order to maximize re-usability and make the script reproducible I have decided to use  [quantmod](http://www.quantmod.com/) library. This library makes data retrieval process automated with no hard copies needed to be downloaded.
+
+### Load Required Libs
+You don't need to install anything manually as the script will do that for you if needed: 
+```{r, echo=T}
+quantmod.loaded <- require('quantmod')
+if(!quantmod.loaded){
+  install.packages('quantmod',repos="http://cran.rstudio.com/")
+  library(quantmod)
+  library(xts)
+}
+ggplot2.loaded <-  require('ggplot2')
+if (!ggplot2.loaded) {
+  install.packages('ggplot2',repos="http://cran.rstudio.com/")
+  library(ggplot2)
+}
+```
+
+### Get Stock Data
+Now we are ready to load all the stocks data into our app. keep in mind that at anytime, you can add more stock tickers to *stock.names* vector or customize it to your needs:
+```{r, echo=T,cache=T}
+# Get 5 companies stock data from Yahoo Finance
+stock.names <- c('AAPL','BAC','GE','XOM','WMT','NYA','^IXIC')
+getSymbols(stock.names,src='yahoo')
+stock.dfs <- list(AAPL,BAC,GE,XOM,WMT,NYA,IXIC)
+```
+
+###Functions
+Let's define two functions to calculate average annual returns and compound 5-year growth rate (return). The latter would be a good indicator of absolute yearly rate of returns. Note that we should not use simple average, arithmetic mean, over multiple time periods.  
+```{r, echo=T}
+stocks.get.returns <- function(company.names){
+  returns.df <- list()
+  N <- length(company.names)
+  for (name.index in 1:N) {
+    returns <- periodReturn(company.names[[name.index]],period='yearly',subset='2010::2015')
+    names(returns) <- c(stock.names[name.index])
+    returns.df[[name.index]] <- returns
+  }
+  result <- Reduce(merge,returns.df)
+  colnames(result)[6:7] <- c('NYSE','NASDAQ')
+  return(result)
+}
+calculate.compound.return <- function(data.returns){
+  compund.averages <- as.data.frame(apply(as.data.frame(data.returns), 2, function(x) x <- (prod(x+1)^(1/length(x)) - 1)*100))
+  names(compund.averages) = c('Average')
+  return(compund.averages)
+}
+```
+###Calculate Yearly Absolute & Relative Returns
+```{r echo=T}
+returns.yearly <- stocks.get.returns(stock.dfs)
+```
+![](https://www.dropbox.com/s/cmpood70a4650ci/Screenshot%202016-02-13%2023.44.16.png?dl=1)
+
+The table above shows that Apple returns dropped more that 80% in 2014. This was due to a split and not performance. We can fix this issue by using the adjusted close values: 
+```{r}
+stock.dfs.adjusted <- lapply(stock.dfs,function(x) x <- adjustOHLC(x, use.Adjusted=TRUE))
+returns.yearly <- stocks.get.returns(stock.dfs.adjusted)
+```
+![](https://www.dropbox.com/s/ekbjtapbewd6617/Screenshot%202016-02-14%2000.19.31.png?dl=1)
+
+Now we are ready to calculate the compound returns. This value gives us a better understanding of overall stocks performance from 2010 to 2015:
+```{r}
+compounds <- calculate.compound.return(returns.yearly)
+```
+![](https://www.dropbox.com/s/lcxpkk0mdzkygey/Screenshot%202016-02-14%2011.20.20.png?dl=1)
+
+This table is showing us that Apple has been a high performer and Bank of America has the least absolute return. Looking at the market return rows, NYSE & NASDAQ, we can also compare the returns relative to their corresponding market performance:
+```{r}
+apple.relative <- cbind(compounds[compounds$Stock=='AAPL',],NASDAQ=compounds[compounds$Stock=='NASDAQ',2],Relative=compounds[compounds$Stock=='AAPL',2]/compounds[compounds$Stock=='NASDAQ',2])
+```
+![](https://www.dropbox.com/s/8o4hzmb3gzksdb6/Screenshot%202016-02-14%2012.10.32.png?dl=1)
+
+And the other 4 stocks in the NYSE composite.
+Note that you get to also observe NASDAQ Vs. NYSE performance:
+```{r}
+others.relative.performance <- (cbind(compounds[compounds$Stock!='AAPL',],NYSE=compounds[compounds$Stock=='NYSE',2],Relative=compounds[compounds$Stock!='AAPL',2]/compounds[compounds$Stock=='NYSE',2]))
+```
+![](https://www.dropbox.com/s/icoaa6fsu755zcw/Screenshot%202016-02-14%2012.16.46.png?dl=1)
+
+###Calculate Volatility
+The volatility is a statistical measure of the dispersion of returns. The higher this value the riskier the stock performance.
+We need to calculate standard deviation:
+```{r}
+calculate.risk <- function(returns){
+  volat.df <- as.data.frame(apply(returns,2,FUN=sd))
+  volat.df <- cbind(row.names(volat.df),volat.df)
+  names(volat.df) = c('Stock','Volatility')
+  return(volat.df)
+}
+```
+
+Then we can call this function to calculate risk associate with the annual returns:
+```{r}
+risks.df <- calculate.risk(returns.yearly)
+```
+![](https://www.dropbox.com/s/7yifp5xyc5nfzxj/Screenshot%202016-02-14%2013.05.22.png?dl=1)
+
+###Analysis
+I am not an expert in finance but overall we can say that we would like to have stocks with highest rates of returns but low volatility.  
+It seems that Bank of America Stock (BAC) is not a good bet at all as it has the highest risk and the lowest return.  
+GE stocks would be a very safe bet as the risk is moderately low while the annual return is the highest compared to NYSE composite/profile.
